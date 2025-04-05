@@ -9,10 +9,11 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+permissions:
+  id-token: write
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -25,17 +26,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
-      - name: Setup JFrog CLI (Foo)
+      - name: Setup JFrog CLI OIDC
         uses: jfrog/setup-jfrog-cli@v4.5.6
         env:
-          # JFrog Platform url
-          JF_URL: ${{ vars.JF_URL }} # or 'https://acme.jfrog.io'
-
-          # Basic authentication credentials
-          JF_USER: ${{ secrets.JF_USER }}
-          JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
+            JF_URL: https://asafwsandbox.jfrog.io 
+        with:
+            oidc-provider-name: github-jfrog 
+            oidc-audience: my-aud
 
       - name: Test Connection to Artifactory
         run: |
           jf rt ping
-
